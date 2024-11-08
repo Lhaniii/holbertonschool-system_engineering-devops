@@ -1,0 +1,58 @@
+One Server Web Infrastructure Design for www.foobar.com
+To explain a simple web infrastructure hosted on a single server, let’s imagine a user wanting to access the website www.foobar.com.
+
+User Request:
+The process starts when the user types www.foobar.com in their web browser. This action generates a request that travels through the internet, searching for the server hosting the foobar.com website.
+
+DNS Lookup:
+The domain name www.foobar.com is configured with a DNS record. In this case, the www is a CNAME (Canonical Name) or A record pointing to the IP address of the server, which is 8.8.8.8. The role of the domain name is to map human-readable website names (like foobar.com) to the corresponding server IP addresses. DNS (Domain Name System) resolves www.foobar.com to 8.8.8.8 and routes the request to the correct server.
+
+Server Overview:
+The server with IP 8.8.8.8 hosts all the components needed to serve the website. The server is essentially a computer designed to store, process, and deliver web content to users. This server will have multiple roles:
+
+Nginx Web Server:
+Nginx acts as the front-facing part of the web infrastructure, receiving HTTP requests from the user’s browser and serving static content like HTML, CSS, and JavaScript files. It also forwards requests to the application server for dynamic content processing.
+
+Application Server:
+Behind the web server is the application server that processes the business logic of the application. This could be a framework like PHP, Node.js, or any other backend technology that handles dynamic content generation. The application server executes the code (which resides on the same machine), processes the logic, interacts with the database, and returns the appropriate response to the web server.
+
+Application Files (Code Base):
+The application server runs the code base stored on the server. This code contains the core logic and functionality of the website, such as fetching data from the database and rendering pages dynamically.
+
+MySQL Database:
+The database stores all the persistent data required by the application, such as user information, product listings, and other dynamic content. When the application server needs to retrieve or store data, it queries the MySQL database.
+
+Data Transfer:
+The server communicates with the user's computer using HTTP/HTTPS protocols. The browser sends an HTTP request, and the server responds by delivering the requested web page.
+
+Explanation of Key Components
+What is a server?
+A server is a physical or virtual machine that provides services or resources to other computers, known as clients. In this context, the server hosts the website, runs the web and application servers, and handles requests from users.
+
+What is the role of the domain name?
+A domain name is a human-readable address (like foobar.com) that maps to an IP address. It allows users to access the website without needing to remember numeric IP addresses.
+
+What type of DNS record is www in www.foobar.com?
+The www is typically a CNAME (Canonical Name) record or an A record, which maps the subdomain to the IP address of the server hosting the website. In this case, www.foobar.com resolves to 8.8.8.8.
+
+What is the role of the web server?
+The web server (Nginx in this case) handles incoming HTTP requests from the user's browser, serves static files, and forwards dynamic requests to the application server. It also manages the communication between the browser and the server.
+
+What is the role of the application server?
+The application server processes the dynamic content of the website. It executes the code, processes requests, and communicates with the database to generate the dynamic web pages.
+
+What is the role of the database?
+The database stores the website's data. The application server interacts with the database to fetch and store data needed to build the dynamic parts of the website, such as user accounts or product listings.
+
+What is the server using to communicate with the user’s computer?
+The server communicates with the user’s computer via the HTTP/HTTPS protocol, which is the foundational communication protocol of the web.
+
+Issues with This Infrastructure
+Single Point of Failure (SPOF):
+Since the entire web infrastructure is hosted on a single server, if this server fails, the entire website goes down. This lack of redundancy makes the website vulnerable.
+
+Downtime During Maintenance:
+When deploying new code or performing maintenance, the server (and thus the entire website) must be restarted. During this period, the website becomes unavailable to users.
+
+Scalability:
+A single server cannot handle a large amount of traffic efficiently. As more users try to access the site, the server may become overwhelmed, leading to slow load times or crashes. The infrastructure cannot easily scale horizontally (adding more servers) or vertically (upgrading server capacity) in this setup.

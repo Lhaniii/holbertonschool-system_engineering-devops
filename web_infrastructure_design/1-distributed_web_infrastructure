@@ -1,0 +1,58 @@
+Three Server Web Infrastructure Design for www.foobar.com
+In this design, we will create a more robust and scalable infrastructure using three servers and some additional components, ensuring high availability and better performance.
+
+User Request: A user requests the website by entering www.foobar.com in their browser. The DNS resolves foobar.com to an IP address, and the request is routed to the load balancer.
+
+Load Balancer (HAProxy): The load balancer, HAProxy, is the first element that receives incoming traffic. The purpose of the load balancer is to distribute traffic evenly between multiple servers, ensuring that no single server is overwhelmed by too many requests. This improves scalability and availability.
+
+Why add a load balancer?
+Adding a load balancer improves fault tolerance and scalability. If one server fails, the load balancer can redirect traffic to the remaining functional servers.
+
+Distribution Algorithm:
+The load balancer is configured with a round-robin distribution algorithm. In this setup, the load balancer cycles through each available server and sends each new request to the next one in the list. This ensures that all servers share the load equally.
+
+Active-Active vs Active-Passive:
+The load balancer enables an Active-Active setup. In this configuration, both servers are active and serve traffic simultaneously, which improves resource utilization and redundancy.
+In an Active-Passive setup, only one server is active at any given time, while the other is in standby mode, ready to take over in case the primary server fails. Active-Active setups offer better load distribution, while Active-Passive provides more robust failover protection.
+
+Web Server (Nginx): Behind the load balancer, we have the Nginx web server. Nginx handles HTTP requests, serving static files like HTML, CSS, and JavaScript to the user's browser. For dynamic content, it forwards requests to the application server.
+
+Application Server: The application server processes the business logic and dynamic content of the website. The code base (application files) resides here. It interacts with the database to retrieve or store data and processes requests to generate dynamic web pages.
+
+Database (MySQL): In this setup, the database uses a Primary-Replica (Master-Slave) cluster. The database cluster improves performance and redundancy by having a primary (master) node and one or more replica (slave) nodes.
+
+Primary-Replica Cluster: The Primary (Master) node is where all write operations (insert, update, delete) are performed. It handles the modifications to the data and then replicates these changes to the Replica (Slave) nodes. The Replica (Slave) nodes only handle read operations, reducing the load on the primary database and improving read performance.
+
+Difference between Primary and Replica nodes:
+The Primary node accepts both read and write operations from the application, while the Replica node only handles read operations. This separation of duties helps balance the load, especially in read-heavy environments.
+
+Explanation of Key Components
+Why add additional servers?
+Additional servers improve scalability, performance, and redundancy. Having multiple servers allows the system to handle more users without crashing and provides failover protection in case one server fails.
+
+What is a Load Balancer?
+A load balancer distributes traffic evenly across multiple servers to prevent any single server from being overwhelmed. It helps in managing the traffic more efficiently and provides redundancy.
+
+How does the load balancer's distribution algorithm work?
+The round-robin algorithm cycles through each server, sending each new incoming request to the next server in the list. This ensures that all servers receive equal traffic, which balances the load across all servers.
+
+Active-Active vs Active-Passive:
+In an Active-Active setup, all servers are online and actively serving traffic. This improves resource utilization and redundancy. In contrast, an Active-Passive setup keeps one server active while the other is on standby, which is better for failover but less efficient in terms of resource usage.
+
+Primary-Replica Database Cluster:
+In this setup, the Primary (Master) node handles all write operations, while the Replica (Slave) nodes are read-only copies of the database. This separation allows for more efficient read-heavy operations, reducing the load on the master and improving performance.
+
+Difference between Primary and Replica nodes:
+The Primary node accepts both read and write operations, while the Replica nodes only handle read requests. This structure improves efficiency in read-heavy applications by offloading read operations from the Primary.
+
+Issues with This Infrastructure
+Single Point of Failure (SPOF):
+
+While adding a load balancer and additional servers improves redundancy, there are still some single points of failure. For example, the load balancer itself could become a point of failure if it goes down, taking the entire system offline.
+Security Issues:
+
+This setup lacks a firewall to filter incoming traffic, leaving the infrastructure exposed to attacks.
+Additionally, there is no HTTPS for secure communication, which could leave the data vulnerable to interception or attacks.
+No Monitoring:
+
+Without monitoring tools, there is no way to keep track of the server performance, traffic load, or potential issues. Implementing monitoring is crucial to maintaining uptime and ensuring the infrastructure runs smoothly.

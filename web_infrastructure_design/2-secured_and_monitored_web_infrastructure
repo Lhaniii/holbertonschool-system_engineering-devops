@@ -1,0 +1,65 @@
+Secured Three Server Web Infrastructure Design for www.foobar.com
+In this design, we are expanding the web infrastructure with a focus on security, encrypted traffic, and monitoring.
+
+User Request: When a user enters www.foobar.com in their browser, a DNS request is made, resolving foobar.com to an IP address. The request is routed to the load balancer, but in this case, we ensure that all traffic is encrypted using HTTPS.
+
+Load Balancer (HAProxy) with SSL Termination: The load balancer distributes the traffic evenly across multiple servers using a round-robin algorithm. In this infrastructure, we introduce SSL termination at the load balancer level to handle incoming HTTPS requests.
+
+Why add SSL?
+Adding an SSL certificate ensures that the communication between the user and the web infrastructure is encrypted. Serving traffic over HTTPS (as opposed to HTTP) provides security by protecting data from being intercepted or tampered with during transmission.
+Firewalls: Each of the servers (load balancer, application server, and database server) is protected by a firewall.
+
+Why add firewalls?
+Firewalls act as a security layer by filtering incoming and outgoing traffic based on predetermined rules. They protect the infrastructure from unauthorized access, attacks, and malicious traffic.
+Web Server (Nginx) and Application Server: After the load balancer, traffic is directed to the Nginx web server. The web server handles the delivery of static content like HTML, CSS, and JavaScript. For dynamic content, requests are forwarded to the application server, which processes the business logic.
+
+Database (MySQL) with Primary-Replica Setup: The database uses a Primary-Replica (Master-Slave) setup to improve redundancy and scalability. The Primary (Master) server handles write operations, while the Replica (Slave) servers handle read operations.
+
+Monitoring Clients (Sumologic or other monitoring services): To ensure proper monitoring, we add monitoring clients to each server (load balancer, web/application servers, and database). These clients collect data about system performance, traffic, and potential issues.
+
+What is monitoring for?
+Monitoring allows administrators to track server performance, identify potential problems, and optimize infrastructure. Monitoring tools can alert the team when a server is under heavy load, if there are security issues, or if there’s downtime.
+
+How is the monitoring tool collecting data?
+The monitoring client installed on each server collects data like CPU usage, memory consumption, web server request rates, and error logs. This data is sent to a central monitoring service (like Sumologic), which analyzes and provides dashboards and alerts.
+
+Monitoring web server QPS (Queries per Second):
+To monitor web server QPS, you can configure the monitoring tool to track HTTP request rates on the web server. This allows you to measure how many queries are being processed per second, which is an important metric for traffic analysis and performance monitoring.
+
+Explanation of Key Components
+Firewalls:
+Firewalls protect the servers by filtering network traffic. They ensure that only legitimate traffic passes through, blocking unauthorized or harmful requests.
+
+Why serve traffic over HTTPS?
+HTTPS encrypts the communication between the user’s browser and the server, protecting sensitive data (such as login credentials or payment details) from being intercepted by malicious actors. It also ensures data integrity, preventing any tampering with data while in transit.
+
+Why use monitoring?
+Monitoring is critical for identifying performance bottlenecks, security breaches, and ensuring the infrastructure is functioning properly. It provides real-time insights into the health of the servers, databases, and applications.
+
+How does monitoring work?
+Monitoring clients installed on each server continuously collect data (such as CPU usage, memory, disk space, and traffic) and send it to the central monitoring service for analysis. This helps detect potential problems early and ensures proactive maintenance.
+
+Issues with This Infrastructure
+SSL Termination at Load Balancer:
+
+Issue:
+When SSL termination happens at the load balancer, it means that traffic between the load balancer and the servers (web, application, and database servers) is not encrypted. This could expose sensitive information inside the infrastructure if someone gains access to internal network traffic.
+
+Solution:
+To avoid this, it's better to maintain end-to-end encryption by configuring SSL on both the load balancer and the web/application servers.
+
+One MySQL Server Capable of Accepting Writes:
+
+Issue:
+If there is only one Primary (Master) MySQL server that can handle write operations, this creates a Single Point of Failure (SPOF). If the primary database goes down, no write operations can be performed until the database is restored, which can cause data loss or downtime.
+
+Solution:
+Implementing a multi-master setup or a failover mechanism can address this, allowing another node to take over the role of the primary database in case of failure.
+
+All Servers with the Same Components (Web Server, Application Server, and Database):
+
+Issue:
+If every server has all components (web server, application server, and database) running together, this leads to resource competition. For example, the database may compete for CPU and memory with the web server and application, which can degrade performance.
+
+Solution:
+A better approach is to separate these services across different servers. One server should handle the web server and application logic, and another should be dedicated to handling the database. This separation ensures each service has adequate resources.

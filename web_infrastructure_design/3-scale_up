@@ -1,0 +1,48 @@
+Infrastructure Design with Load Balancer Cluster and Split Components for www.foobar.com
+In this design, we are adding a new server to the infrastructure, clustering the load balancers, and splitting the components (web server, application server, and database) onto their own servers.
+
+User Request: When a user types www.foobar.com into their browser, the DNS resolves the domain name to the IP address of the load balancer cluster. The request is routed to one of the load balancers.
+
+Load Balancer Cluster (HAProxy): We add a second load balancer to the infrastructure, creating a HAProxy cluster for high availability and fault tolerance.
+
+Why add a second load balancer?
+By clustering two load balancers, we ensure that if one load balancer fails, the other can seamlessly take over, preventing downtime. This redundancy increases the reliability of the infrastructure.
+
+Load Balancer Cluster Configuration:
+The load balancers work in an Active-Passive or Active-Active configuration:
+
+In Active-Passive, one load balancer is actively handling all traffic while the other remains in standby, ready to take over if the active one fails.
+In Active-Active, both load balancers are actively sharing the traffic load, which improves performance and resource utilization.
+Splitting Components onto Dedicated Servers: Each core component (web server, application server, and database) is hosted on its own server. This improves the organization, performance, and scalability of the infrastructure.
+
+Web Server (Nginx):
+The Nginx web server handles all incoming HTTP requests and serves static content (HTML, CSS, JavaScript). By hosting it on its own server, it can handle large numbers of requests more efficiently without being affected by other resource-intensive processes.
+
+Application Server:
+The application server processes dynamic content and business logic. It interacts with the database and runs the codebase. By dedicating a server to the application logic, we isolate this resource-intensive process from other components, ensuring that application performance is optimized.
+
+Database (MySQL) on its own server:
+The MySQL database handles all the read and write operations required by the application. By hosting the database on a separate server, we improve data handling efficiency and allow better scalability for data storage and querying operations.
+
+Data Flow:
+
+The load balancer directs incoming traffic to the web server.
+The web server handles static content and forwards requests for dynamic content to the application server.
+The application server processes requests, interacts with the database server to fetch or write data, and returns the results to the web server.
+The web server delivers the final content to the user's browser.
+Explanation of Key Components
+Why add a second load balancer?
+Adding a second load balancer prevents a single point of failure. If the primary load balancer goes down, the secondary one can take over without causing downtime for the website.
+
+Why split components (web server, application server, database) onto their own servers?
+By separating these components, we achieve better performance and scalability. Each server is dedicated to its own task (serving web content, processing application logic, or handling database operations), allowing them to operate independently without competing for resources. This also allows for scaling each component individually if the traffic or resource requirements increase.
+
+Issues Solved by This Infrastructure
+Redundancy:
+The addition of a second load balancer ensures redundancy, meaning that if one load balancer fails, the other can take over, preventing downtime and ensuring high availability.
+
+Improved Performance:
+By splitting the web server, application server, and database onto separate servers, each component can perform more efficiently without being affected by the others. This also allows each server to scale independently based on its own resource requirements.
+
+Scalability:
+The infrastructure is designed to scale more easily. If the number of users or the load on any specific component increases, additional servers can be added for the web server, application server, or database without affecting the rest of the system.
